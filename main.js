@@ -20,7 +20,7 @@ function main(){
    console.log(e);
     var x = Math.floor((e.clientX - X_OFFSET*2)/UNIT);
     var y = Math.floor((e.clientY - Y_OFFSET*2)/UNIT);
-    markRed(x,y);
+    setPiece(x,y,true);
   };
 }
 
@@ -69,6 +69,7 @@ function drawPiece(x,y,rotated){
   ctx.closePath();
   ctx.stroke();
   if(rotated){
+    ctx.translate(UNIT,UNIT);
     ctx.rotate(-Math.PI);
   }
   ctx.translate(-dX,-dY);
