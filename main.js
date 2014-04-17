@@ -7,13 +7,21 @@ UNIT = 40;
 WIDTH = X_LINES * UNIT + X_OFFSET*2;
 HEIGHT = Y_LINES * UNIT + Y_OFFSET*2;
 
+
+PIECELIST = [];
+
 function main(){
   cvs = document.getElementById("cvs");
   ctx = cvs.getContext('2d');
   cvs.width = WIDTH;
   cvs.height = HEIGHT;
   init();
-  drawPiece(1,2,false);
+  cvs.onclick = function(e){
+   console.log(e);
+    var x = Math.floor((e.clientX - X_OFFSET*2)/UNIT);
+    var y = Math.floor((e.clientY - Y_OFFSET*2)/UNIT);
+    markRed(x,y);
+  };
 }
 
 function init(){
@@ -30,8 +38,16 @@ function init(){
 }
 
 
-function setPiece(){
+function setPiece(x,y,dir){
+  PIECELIST.push({x:x,y:y,dir:dir});
+  drawPiece(x,y,dir);
+}
 
+function markRed(x,y){
+  ctx.globalAlpha = 0.5;
+  ctx.fillStyle = "red";
+  ctx.fillRect(X_OFFSET+UNIT*x,Y_OFFSET+UNIT*y,UNIT,UNIT);
+  ctx.globalAlpha = 1;
 }
 
 function drawPiece(x,y,rotated){
