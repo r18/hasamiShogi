@@ -13,8 +13,7 @@ function main(){
   cvs.width = WIDTH;
   cvs.height = HEIGHT;
   init();
-  ctx.translate(X_OFFSET,Y_OFFSET);
-  drawPiece();
+  drawPiece(1,2,false);
 }
 
 function init(){
@@ -35,15 +34,28 @@ function setPiece(){
 
 }
 
-function drawPiece(){
+function drawPiece(x,y,rotated){
+  var dX = X_OFFSET + x * UNIT;
+  var dY = Y_OFFSET + y * UNIT;
+  ctx.translate(dX,dY);
+  if(rotated){
+    ctx.rotate(Math.PI);
+    ctx.translate(-UNIT,-UNIT);
+  }
+  ctx.font = UNIT/2+"px san-serif";
+  ctx.fillText("歩",UNIT/4,UNIT*2/3);
   ctx.beginPath();
-  ctx.moveTo(UNIT*1/8,UNIT*2/11);
-  ctx.lineTo(UNIT*2/8,UNIT*8/11);
-  ctx.lineTo(UNIT*4/8,UNIT*9/11);
-  ctx.lineTo(UNIT*6/8,UNIT*8/11);
-  ctx.lineTo(UNIT*7/8,UNIT*2/11);
+  ctx.moveTo(UNIT*1/8,UNIT*9/11);
+  ctx.lineTo(UNIT*2/8,UNIT*3/11);
+  ctx.lineTo(UNIT*4/8,UNIT*2/11);
+  ctx.lineTo(UNIT*6/8,UNIT*3/11);
+  ctx.lineTo(UNIT*7/8,UNIT*9/11);
   ctx.closePath();
   ctx.stroke();
+  if(rotated){
+    ctx.rotate(-Math.PI);
+  }
+  ctx.translate(-dX,-dY);
 }
 
 function removePiece() {
