@@ -107,17 +107,45 @@ function movePiece(){
 
 }
 
+function getMovement(x,y,dir){
+  var nx = collectSpace(x,y,dir,-1,0,[]);
+  var ny = collectSpace(x,y,dir,0,-1,[]);
+  var px = collectSpace(x,y,dir,1,0,[]);
+  var py = collectSpace(x,y,dir,0,1,[]);
+
+  console.log(ny);
+  markRedWithArray(nx);
+  markRedWithArray(px);
+  markRedWithArray(ny);
+  markRedWithArray(py);
+
+}
+
+function markRedWithArray(array) {
+ for(var a in array){
+    var p = array[a];
+    markRed(p.x,p.y);
+ }
+}
+
+function collectSpace(x,y,dir,dx,dy,res) {
+ console.log(x,y);
+  if(x < 0 || x > 8 || y < 0 || y > 8){
+   return res;
+  }
+  if(getPiece(x,y) == -1){
+    res.push({x:x,y:y,dir:dir});
+  }
+  return collectSpace(x+dx,y+dy,dir,dx,dy,res);
+}
+
 function mouseClicked(e){
-    console.log(e);
     var x = Math.floor((e.clientX - X_OFFSET*2)/UNIT);
     var y = Math.floor((e.clientY - Y_OFFSET*2)/UNIT);
-    if(!SELECTED){
+    if(!SELECTED && getPiece(x,y) != -1){
       SELECTED = {x:x,y:y};
       markRed(x,y);
-    } else {
-      removeTile(x,y);
-      setPiece(x,y,true);
-      SELECTED = null;
+      getMovement(x,y,true);
     }
 }
 
