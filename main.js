@@ -11,6 +11,7 @@ LINE_WIDTH = 2;
 
 
 PIECELIST = [];
+MOVABLES = [];
 SELECTED = null; 
 
 function main(){
@@ -108,12 +109,18 @@ function movePiece(){
 }
 
 function getMovement(x,y,dir){
+  MOVABLES = [];
+
   var nx = collectSpace(x,y,dir,-1,0,[]);
   var ny = collectSpace(x,y,dir,0,-1,[]);
   var px = collectSpace(x,y,dir,1,0,[]);
   var py = collectSpace(x,y,dir,0,1,[]);
 
-  console.log(ny);
+  if(nx.length > 0)MOVABLES.push.apply(MOVABLES,nx);
+  if(px.length > 0)MOVABLES.push.apply(MOVABLES,px);
+  if(ny.length > 0)MOVABLES.push.apply(MOVABLES,ny);
+  if(py.length > 0)MOVABLES.push.apply(MOVABLES,py);
+
   markRedWithArray(nx);
   markRedWithArray(px);
   markRedWithArray(ny);
@@ -122,31 +129,74 @@ function getMovement(x,y,dir){
 }
 
 function markRedWithArray(array) {
- for(var a in array){
+  for(var a in array){
     var p = array[a];
     markRed(p.x,p.y);
- }
+  }
 }
 
 function collectSpace(x,y,dir,dx,dy,res) {
- console.log(x,y);
+  console.log(x,y);
+  x += dx;
+  y += dy;
+  console.log(x,y);
   if(x < 0 || x > 8 || y < 0 || y > 8){
-   return res;
+    return res;
   }
   if(getPiece(x,y) == -1){
     res.push({x:x,y:y,dir:dir});
+
+  } else {
+    return res;
   }
-  return collectSpace(x+dx,y+dy,dir,dx,dy,res);
+  return collectSpace(x,y,dir,dx,dy,res);
+}
+
+function isMovable(x,y) {
+  if(MOVABLES.length == 0) return false;
+  for(var i in MOVABLES){
+    var p = MOVABLES[i];
+    if(p.x == x && p.y == y)return true;
+  }
+  return false;
+}
+
+function removeMarkedTile() {
+  for(var i in MOVABLES){
+    var p = MOVABLES[i];
+    removeTile(p.x,p.y);
+  }
+}
+
+function removePieceFromPieceList(x,y) {
+ for(var i in PIECELIST){
+    var p = PIECELIST[i];
+    if(p.x == x && p.y == y){
+      PIECELIST.splice(i,1);
+      return true;
+    }
+ }
+ return false;
 }
 
 function mouseClicked(e){
-    var x = Math.floor((e.clientX - X_OFFSET*2)/UNIT);
-    var y = Math.floor((e.clientY - Y_OFFSET*2)/UNIT);
-    if(!SELECTED && getPiece(x,y) != -1){
-      SELECTED = {x:x,y:y};
-      markRed(x,y);
+  var x = Math.floor((e.clientX - X_OFFSET*2)/UNIT);
+  var y = Math.floor((e.clientY - Y_OFFSET*2)/UNIT);
+  if(!SELECTED){ 
+    var p = getPiece(x,y);
+    if(p != -1){
+      SELECTED = p;
       getMovement(x,y,true);
+    } 
+  } else {
+    if(isMovable(x,y)){
+      removeMarkedTile();
+      removeTile(SELECTED.x,SELECTED.y);
+      setPiece(x,y,SELECTED.dir);
+      removePieceFromPieceList(SELECTED.x,SELECTED.y);
+      SELECTED = null; 
     }
+  }
 }
 
 
